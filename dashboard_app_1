@@ -1,0 +1,34 @@
+# app.R
+
+library( shiny)
+library( shinydashboard)
+
+# You can quickly view it at console by using shinyapp() function. 
+
+ui <- dashboardPage( 
+  dashboardHeader( title = "This is Title."), # title for header.
+  
+  dashboardSidebar(
+    sidebarMenu(
+      menuItem( "Dashborad", tabname = "Dashborad", icon = icon("dashboard")),
+      menuItem( "Rawdata", tabname = "Rawdata", icon = icon("th"))
+    )
+  ),
+  dashboardBody(
+    # Boxes need to be put in a row (or column)
+    fluidRow(
+      box( plotOutput( "plot1", height = 250)),
+      
+      box(
+        title = "Controls",
+        sliderInput("slider", "Number of observations:", 1, 100, 50)
+      )
+    )
+  )
+)
+
+server <- function( input, output){
+  
+}
+
+shinyApp( ui, server)
