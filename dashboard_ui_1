@@ -1,0 +1,17 @@
+# ui.R
+
+library( shinydashboard)
+
+# A dashboard has 3 parts: a header, a sidebar and a body.
+# Here is the most minimal possible UI for a dashboard page.
+
+dashboardPage( 
+  dashboardHeader(),
+  dashboardSidebar(
+    sidebarMenu(
+      menuItem( "Dashborad", tabname = "Dashborad", icon = icon("dashborad")),
+      menuItem( "Rawdata", tabname = "Rawdata", icon = icon("th"))
+    )
+  ),
+  dashboardBody()
+)
