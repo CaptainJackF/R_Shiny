@@ -5,30 +5,50 @@ library( shinydashboard)
 
 # You can quickly view it at console by using shinyapp() function. 
 
-ui <- dashboardPage( 
-  dashboardHeader( title = "This is Title."), # title for header.
+
+header <- dashboardHeader( title = "My Dashboard", # title for header.
+                           dropdownMenuOutput( "messages")) 
   
-  dashboardSidebar(
-    sidebarMenu(
-      menuItem( "Dashborad", tabname = "Dashborad", icon = icon("dashboard")),
-      menuItem( "Rawdata", tabname = "Rawdata", icon = icon("th"))
-    )
-  ),
-  dashboardBody(
-    # Boxes need to be put in a row (or column)
-    fluidRow(
-      box( plotOutput( "plot1", height = 250)),
-      
-      box(
-        title = "Controls",
-        sliderInput("slider", "Number of observations:", 1, 100, 50)
-      )
+sidebar <- dashboardSidebar( # 左侧选择菜单设置
+    sidebarMenu( 
+      menuItem( "Dashboard", tabName = "dashboard", icon = icon("dashboard")),
+      menuItem( "Widgets", tabName = "widgets", icon = icon("th"))
     )
   )
-)
-
-server <- function( input, output){
   
+body <- dashboardBody(
+    tabItems( 
+      # First tab content
+      tabItem( tabName = "dashboard",
+              fluidRow( 
+                box( title = "Fitst tab title.", 
+                     footer = "First footer.",
+                     plotOutput( outputId =  "plot1", height = 300), #
+                ),
+                
+                box( title = "Controls",
+                  sliderInput( "slider", "Number of observations:", 1, 100, 50) )  # 滑动条
+                )
+              ),
+      
+      # Second tab content
+      tabItem( tabName = "widgets",
+              h2( "Widgets tab content")
+      )
+    )
+)
+  
+
+ui <- dashboardPage( header, sidebar, body)
+  
+server <- function( input, output){
+  set.seed(122)
+  histdata <- rnorm(500)
+  
+  output$plot1 <- renderPlot({
+    data <- histdata[seq_len(input$slider)]
+    hist(data)
+  })
 }
 
 shinyApp( ui, server)
