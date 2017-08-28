@@ -10,20 +10,22 @@ header <- dashboardHeader( title = "My Dashboard", # title for header.
                            dropdownMenuOutput( "messages")) 
   
 sidebar <- dashboardSidebar( # 左侧选择菜单设置
-    sidebarMenu( 
+    sidebarMenu(  
       menuItem( "Dashboard", tabName = "dashboard", icon = icon("dashboard")),
       menuItem( "Widgets", tabName = "widgets", icon = icon("th"))
+# 两个Item 分别对应左侧两个选择栏，并且 body变量中，tabItem的 name参数要和sidebar 中的name一致，才可联动
     )
   )
   
 body <- dashboardBody(
     tabItems( 
       # First tab content
-      tabItem( tabName = "dashboard",
+      tabItem( tabName = "dashboard", # 与sidebar中的 tabname对应
               fluidRow( 
-                box( title = "Fitst tab title.", 
-                     footer = "First footer.",
-                     plotOutput( outputId =  "plot1", height = 300), #
+                box( title = "Fitst tab title.", # title of the first box.
+                     footer = "First footer.", # No idea what it is yet.
+                     plotOutput( outputId =  "plot1", height = 300) 
+                     # plotOutput 输出参数，输出的形式是什么，宽度高度是多少
                 ),
                 
                 box( title = "Controls",
@@ -32,14 +34,14 @@ body <- dashboardBody(
               ),
       
       # Second tab content
-      tabItem( tabName = "widgets",
+      tabItem( tabName = "widgets", # 与sidebar中第二个的 tabname对应
               h2( "Widgets tab content")
       )
     )
 )
   
 
-ui <- dashboardPage( header, sidebar, body)
+ui <- dashboardPage( header, sidebar, body) # 将上述三个三处组合成一个ui
   
 server <- function( input, output){
   set.seed(122)
