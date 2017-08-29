@@ -8,67 +8,105 @@ library( shinydashboard)
 # DropdownMenu 下拉菜单
 # Message Menus
 Message_menu <- dropdownMenu( 
-  type = "messages", 
+  type = "messages",  # icon type, Only one parameter.
   messageItem(
-    from = "Sales Dept",
-    message = "Sales are steady this month."
+    from = "Sales Dept", # Title1 ,bigger one. 
+    message = "Sales are steady this month." # text for this icon
   ),
   messageItem(
-    from = "Support",
+    from = "Support", # Title2 ,bigger one. 
     message = "The new server is ready.",
-    icon = icon( "life-ring"),
-    time = "2014-12-01"
+    icon = icon( "life-ring"), # icon for this Item.
+    time = "2014-12-01" # time info , right side.
   )
 )
+# Notification menus: Text notification only.
+Notification_menus <- dropdownMenu(
+  type = "notifications", # icon type
+  notificationItem(
+    text = "5 new users today",
+    icon( "user")
+  )
+)
+# Task menus: 类似进度条，可以显示value，并自动计算 value/100 的百分比。
+Task_menus <- dropdownMenu(
+  type = "tasks",
+  badgeStatus = "success", # this parameter can change superscript(上标) color.
+  taskItem( value = 90, color = "light-blue", text = "Text 1"),
+  taskItem( value = 20, color = "fuchsia", text = "Text 2")
+  # color parameter : red, yellow, aqua, blue, light-blue, green, navy, 
+  #   teal, olive, lime, orange, fuchsia, purple, maroon, black
+)
+
 # Header Info
 header <- dashboardHeader( 
   title = "My Dashboard", # title for header.
-  Message_menu, # DropdownMenu
-  dropdownMenuOutput( "messages"), # DropdownMenu
-  disable = FALSE)  # disable =TRUE 可隐藏 Header
+  Message_menu, Notification_menus, Task_menus, # DropdownMenu
+  disable = FALSE # disable =TRUE 可隐藏 Header
+) 
+
+# ------------------↑ Header setting, Sidebar setting ↓----------------------------------------
 
 sidebar <- dashboardSidebar( # 左侧选择菜单设置
     sidebarMenu(  
       menuItem( "Dashboard", tabName = "dashboard", icon = icon("dashboard")),
       menuItem( "Widgets", tabName = "widgets", icon = icon("th"),
-                badgeLabel = "New", badgeColor = "green")
+                badgeLabel = "New", badgeColor = "green"), # badgeColor 右侧标注信息的背景色
+      menuItem( "A link ?", icon = icon( "file-code-o"), 
+               href = "http://rstudio.github.io/shinydashboard/structure.html#message-menus"),
+      
+      menuItemOutput( "menuitem") # sidebarMenuOutput( "menu") also worked, but need to change the output$" ".
     # 两个Item 分别对应左侧两个选择栏，并且 body变量中，tabItem的 name参数要和sidebar 中的name一致，才可联动
-    )
-  )
+    ),
+    disable = FALSE # disable =TRUE 可隐藏 Sidebar
+)
   
 body <- dashboardBody(
-    tabItems( 
+    tabItems(
       # First tab content
       tabItem( tabName = "dashboard", # 与sidebar中的 tabname对应
-              fluidRow( 
-                box( title = "Fitst tab title.", # title of the first box.
-                     footer = "First footer.", # 脚注之类的东东.
-                     plotOutput( outputId =  "plot1", height = 300) 
-                     # plotOutput 输出参数，输出的形式是什么，宽度高度是多少
-                ),
-                
-                box( title = "Controls",
-                  sliderInput( "slider", "Number of observations:", 1, 100, 50) )  # 滑动条
-                )
-              ),
+               fluidRow(
+                 box( title = "Fitst tab title.", # title of the first box.
+                      footer = "First footer.", # 脚注之类的东东.
+                      plotOutput( outputId =  "plot1", height = 300) 
+                      # plotOutput 输出参数，输出的形式是什么，宽度高度是多少
+                      ),
+                 
+                 box( title = "Controls",
+                      sliderInput( "slider", "Number of observations:", 1, 100, 50)
+                      )  # 滑动条
+                 )
+               ),
       
       # Second tab content
       tabItem( tabName = "widgets", # 与sidebar中第二个的 tabname对应
-              h2( "Widgets tab content")
+               h1( "Widgets tab content"),
+               h2( "Widgets tab content"), 
+               h3( "Widgets tab content"),
+               h4( "Widgets tab content"),
+               h5( "Widgets tab content"),
+               h6( "Widgets tab content")
+               # 纯文本，1-6表示标题大小，1最大。同 Markdown 中的 header1-6
+               )
       )
-    )
 )
   
 
 ui <- dashboardPage( header, sidebar, body) # 将上述三个三处组合成一个ui
   
 server <- function( input, output){
-  set.seed(122)
-  histdata <- rnorm(500)
+  set.seed( 122)
+  histdata <- rnorm( 500)
   
   output$plot1 <- renderPlot({
-    data <- histdata[seq_len(input$slider)]
-    hist(data)
+    data <- histdata[ seq_len( input$slider)]
+    hist( data)
+  })
+  
+  output$menuitem <- renderMenu({
+    sidebarMenu(
+      menuItem("Menu item", icon = icon("calendar"))
+    )
   })
 }
 
