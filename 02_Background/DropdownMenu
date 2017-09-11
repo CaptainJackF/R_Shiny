@@ -48,52 +48,70 @@ header <- dashboardHeader(
 # ------------------↑ Header setting, Sidebar setting ↓----------------------------------------
 
 sidebar <- dashboardSidebar( # 左侧选择菜单设置
-    sidebarMenu(  
-      menuItem( "Dashboard", tabName = "dashboard", icon = icon("dashboard")),
-      menuItem( "Widgets", tabName = "widgets", icon = icon("th"),
-                badgeLabel = "New", badgeColor = "green"), # badgeColor 右侧标注信息的背景色
-      menuItem( "A link ?", icon = icon( "file-code-o"), 
-               href = "http://rstudio.github.io/shinydashboard/structure.html#message-menus"),
-      
-      menuItemOutput( "menuitem") # sidebarMenuOutput( "menu") also worked, but need to change the output$" ".
+  sidebarMenu(  
+    menuItem( "Dashboard", tabName = "dashboard", icon = icon("dashboard")),
+    menuItem( "Widgets", tabName = "widgets", icon = icon("th"),
+              badgeLabel = "New", badgeColor = "green"), # badgeColor 右侧标注信息的背景色
+    menuItem( "A link ?", icon = icon( "file-code-o"), 
+              href = "http://rstudio.github.io/shinydashboard/structure.html#message-menus"),
+    
+    menuItemOutput( "menuitem") # sidebarMenuOutput( "menu") also worked, but need to change the output$" ".
     # 两个Item 分别对应左侧两个选择栏，并且 body变量中，tabItem的 name参数要和sidebar 中的name一致，才可联动
-    ),
-    disable = FALSE # disable =TRUE 可隐藏 Sidebar
+  ),
+  sidebarSearchForm( textId = "searchText", buttonId = "searchButton", label = "Search..."),
+  disable = FALSE # disable =TRUE 可隐藏 Sidebar
 )
-  
+
 body <- dashboardBody(
-    tabItems(
-      # First tab content
-      tabItem( tabName = "dashboard", # 与sidebar中的 tabname对应
-               fluidRow(
-                 box( title = "Fitst tab title.", # title of the first box.
-                      footer = "First footer.", # 脚注之类的东东.
-                      plotOutput( outputId =  "plot1", height = 300) 
-                      # plotOutput 输出参数，输出的形式是什么，宽度高度是多少
-                      ),
-                 
-                 box( title = "Controls",
-                      sliderInput( "slider", "Number of observations:", 1, 100, 50)
-                      )  # 滑动条
-                 )
+  tabItems(
+    # First tab content
+    tabItem( tabName = "dashboard", # 与sidebar中的 tabname对应
+             fluidRow( # This is just the body component of a dashboard
+               box( title = "Fitst tab title.", # title of the first box.
+                    status = "primary", # 框框上方的颜色
+                    solidHeader = FALSE,
+                    footer = "First footer.", # 脚注之类的东东.
+                    plotOutput( outputId =  "plot1", height = 200) # key!
+                    # plotOutput 输出参数，输出的形式是什么，宽度高度是多少
                ),
-      
-      # Second tab content
-      tabItem( tabName = "widgets", # 与sidebar中第二个的 tabname对应
-               h1( "Widgets tab content"),
-               h2( "Widgets tab content"), 
-               h3( "Widgets tab content"),
-               h4( "Widgets tab content"),
-               h5( "Widgets tab content"),
-               h6( "Widgets tab content")
-               # 纯文本，1-6表示标题大小，1最大。同 Markdown 中的 header1-6
+               
+               box( title = "Controls",
+                    status = "warning", # 框框上方的颜色
+                    solidHeader = TRUE, # Box header ，dafult is FALSE，display the box header.
+                    collapsible = TRUE, # collapse the box
+                    background = "maroon", # color of the background
+                    sliderInput( "slider", "Number of observations:", 1, 100, 50),
+                    textInput( "Text", "Text input...")
+               )  # 滑动条
+               
+             )
+    ),
+    # Second tab content
+    tabItem( tabName = "widgets", # 与sidebar中第二个的 tabname对应
+             h1( "Widgets tab content"),
+             h2( "Widgets tab content"), 
+             h3( "Widgets tab content"),
+             h4( "Widgets tab content"),
+             h5( "Widgets tab content"),
+             h6( "Widgets tab content"),
+             fluidRow(
+               tabBox(
+                 title = "First Tab.",
+                 id = "tabset1", 
+                 side = "right",
+                 height = "200px",
+                 tabPanel( "Tab1", "First tab content"),
+                 tabPanel( "Tab2", "Tab content 2")
                )
-      )
+             )
+             # 纯文本，1-6表示标题大小，1最大。同 Markdown 中的 header1-6
+    )
+  )
 )
-  
+
 
 ui <- dashboardPage( header, sidebar, body) # 将上述三个三处组合成一个ui
-  
+
 server <- function( input, output){
   set.seed( 122)
   histdata <- rnorm( 500)
@@ -107,6 +125,11 @@ server <- function( input, output){
     sidebarMenu(
       menuItem("Menu item", icon = icon("calendar"))
     )
+  })
+  
+  # The currently selected tab from first box
+  output$tabset1Selected <- renderText({
+    input$tabset1
   })
 }
 
