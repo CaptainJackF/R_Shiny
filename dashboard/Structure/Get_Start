@@ -1,0 +1,45 @@
+# 
+
+library(shinydashboard)
+
+# A dashboard has three parts: a header, a sidebar, and a body.
+# This is UI.
+ui <- dashboardPage(
+  dashboardHeader(),
+  dashboardSidebar(),
+  dashboardBody()
+)
+
+server <- function(input, output) { }
+
+shinyApp(ui, server)
+# And you can see a blank Dashboard.
+
+# And you can add some something in it.
+ui <- dashboardPage(
+  dashboardHeader(title = "Basic dashboard"), # Title on the top left side.
+  dashboardSidebar(),  # Nothing in Sidebar
+  dashboardBody(
+    # Boxes need to be put in a row (or column)
+    fluidRow(
+      box(plotOutput("plot1", height = 250)), # Add a barplot in the body.
+
+      box(
+        title = "Controls",
+        sliderInput("slider", "Number of observations:", 1, 100, 50)  # And this is a Slider box.
+      )
+    )
+  )
+)
+
+server <- function(input, output) { 
+  set.seed(122)
+  histdata <- rnorm(500)
+
+  output$plot1 <- renderPlot({ # **connect with the plot1.**
+    data <- histdata[seq_len(input$slider)]
+    hist(data)
+  })
+}
+
+shinyApp(ui, server)
