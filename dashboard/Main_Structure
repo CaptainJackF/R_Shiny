@@ -1,0 +1,14 @@
+#Structure overview
+#机构
+
+library( shiny)
+library( shinydashboard)
+
+# dashboard 由三部分构成， Header，Sidebar 和 Body
+
+header <- dashboardHeader()
+sidebar <- dashboardSidebar()
+body <- dashboardBody()
+
+dashboardPage(header, sidebar, body)
+# 为了更好的开发三个部分的界面，将它们分开并分别赋值给 Header，sidebar 和 body
