@@ -1,0 +1,54 @@
+# And now, we will use the sidebar.
+
+library( shinydashboard)
+
+ui <- dashboardPage(
+  dashboardHeader( title = "My testing dashboard"), # Change the title.
+  dashboardSidebar(
+    sidebarMenu( # Here can add some menu in the sidebar.
+      menuItem( "Dashboard",  # The title of this menu
+                tabName = "dashboard",  
+                # tabname is very import, cause it will connect the body. When you click the different menu, 
+                # you can see the other view in the body.
+                icon = icon("dashboard") 
+                ), 
+      menuItem( "Widgets", 
+                tabName = "widgets", 
+                icon = icon("th")
+                )
+    )
+  ),
+  dashboardBody(
+    tabItems(
+      # First tab content
+      tabItem(tabName = "dashboard", # The same with "dashboardSidebar" one.
+              fluidRow(
+                box(plotOutput( "plot1", height = 250)),
+                box(
+                  title = "Controls",
+                  sliderInput("slider", "Number of observations:", 1, 100, 50)
+                )
+              )
+      ),
+      
+      # Second tab content
+      tabItem( tabName = "widgets", # The another one in sidebar.
+               h2( "Widgets tab content"),
+               h4( "Widgets tab content") # Just the some character.
+      )
+    )
+  )
+)
+
+server <- function(input, output) {
+  set.seed(122)
+  histdata <- rnorm(500)
+  
+  output$plot1 <- renderPlot({
+    data <- histdata[seq_len(input$slider)]
+    hist(data)
+  })
+}
+
+# And you will see different view in thw two sidebar menu.
+shinyApp( ui, server)
